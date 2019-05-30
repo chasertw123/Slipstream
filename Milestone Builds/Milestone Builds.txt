@@ -1,0 +1,1 @@
+This folder contains milestone builds, such as alpha, beta, QA, and release passes.

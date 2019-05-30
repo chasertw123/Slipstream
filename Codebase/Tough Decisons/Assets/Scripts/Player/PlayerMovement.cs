@@ -76,6 +76,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (GameManager.instance.IsGamePaused())
+            return;
+
         UpdateCameraPerspective();
         
         CameraRotation();

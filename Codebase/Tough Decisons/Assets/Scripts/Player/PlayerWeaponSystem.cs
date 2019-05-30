@@ -88,7 +88,7 @@ public class PlayerWeaponSystem : MonoBehaviour
             RaycastHit firstHit;
             if (Physics.Raycast(cam.transform.position, rayDirection, out firstHit, fireRange))
             {
-                Debug.DrawLine(cam.transform.position, firstHit.point, Color.red);
+                Debug.DrawLine(cam.transform.position, firstHit.point, Color.red, 1.5f);
                 // TODO: Play VFX Here
 
                 PenetrableSurface hitSurface = GetSurfaceFromRaycastHit(firstHit);
@@ -108,6 +108,7 @@ public class PlayerWeaponSystem : MonoBehaviour
                     if (penetrationAmount > penetrationForce)
                         break;
                     
+                    Debug.DrawLine(lastHit.point, wallData.raycastHit.point, Color.green, 1.5f);
                     lastHit = wallData.raycastHit;
 
                     float distanceLeft = fireRange - Vector3.Distance(firstHit.point, lastHit.point);
@@ -117,7 +118,7 @@ public class PlayerWeaponSystem : MonoBehaviour
                     Vector3 debug = lastHit.point;
                     if (Physics.Raycast(lastHit.point, rayDirection, out lastHit, distanceLeft))
                     {
-                        Debug.DrawLine(debug, lastHit.point, Color.red);
+                        Debug.DrawLine(debug, lastHit.point, Color.red, 1.5f);
                         hitSurface = GetSurfaceFromRaycastHit(lastHit);
 
                         // TODO: Play VFX Here
@@ -125,14 +126,14 @@ public class PlayerWeaponSystem : MonoBehaviour
 
                     else
                     {
-                        Debug.DrawRay(debug, rayDirection * distanceLeft, Color.red);
+                        Debug.DrawRay(debug, rayDirection * distanceLeft, Color.red, 1.5f);
                         break;
                     }
                 }
             }
             
             else
-                Debug.DrawRay(cam.transform.position, rayDirection * fireRange, Color.red);
+                Debug.DrawRay(cam.transform.position, rayDirection * fireRange, Color.red, 1.5f);
         }
 
         nextShot = Time.time + (1.0f / fireRate);
@@ -144,6 +145,11 @@ public class PlayerWeaponSystem : MonoBehaviour
         // TODO: Play SFX Here
     }
 
+    public void ClearLevelCaching()
+    {
+        penetrableSurfaces.Clear();
+    }
+
     PenetrableSurface GetSurfaceFromRaycastHit(RaycastHit surfaceHit)
     {
         foreach (PenetrableSurface surface in penetrableSurfaces)
@@ -151,7 +157,6 @@ public class PlayerWeaponSystem : MonoBehaviour
                 return surface;
         
         PenetrableSurface foundSurface = surfaceHit.transform.GetComponent<PenetrableSurface>();
-        
         if (foundSurface != null)
             penetrableSurfaces.Add(foundSurface);
 
@@ -175,11 +180,8 @@ public class PlayerWeaponSystem : MonoBehaviour
 
         RaycastHit backsideHit;
         if (hit.collider.Raycast(new Ray(reverseRayOrigin, -rayDirection), out backsideHit, 7f))
-        {
-            Debug.DrawLine(hit.point, backsideHit.point, Color.green);
             return new PenetrableSurface.WallPenetrationData(backsideHit, Vector3.Distance(hit.point, backsideHit.point));
-        }
-        
+
         return new PenetrableSurface.WallPenetrationData(backsideHit, 0);
     }
 
